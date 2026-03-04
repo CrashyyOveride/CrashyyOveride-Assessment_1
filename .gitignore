@@ -1,0 +1,13 @@
+# Ignore the 15,000 lines of template libraries
+assets/js/jquery.min.js
+assets/js/jquery.scrolly.min.js
+assets/js/jquery.scrollex.min.js
+assets/js/browser.min.js
+assets/js/breakpoints.min.js
+assets/js/util.js
+assets/sass/
+assets/webfonts/
+
+# Only track MY custom work
+!assets/js/main.js
+!assets/css/main.css
