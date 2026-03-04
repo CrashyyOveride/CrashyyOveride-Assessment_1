@@ -1,0 +1,35 @@
+@use "sass:map";
+@use "sass:list";
+@use "sass:meta";
+
+  $filtered-keys: ();
+  @each $key in $keys {
+    @if $key != null {
+      $filtered-keys: list.append($filtered-keys, $key);
+    }
+  }
+
+  // Use native deep map fetching
+  @return map.get($map, $filtered-keys...);
+}
+
+
+@function _duration($keys...) {
+  @return get-deep($duration, $keys...);
+}
+
+@function _font($keys...) {
+  @return get-deep($font, $keys...);
+}
+
+@function _palette($keys...) {
+  @return get-deep($palette, $keys...);
+}
+
+@function _size($keys...) {
+  @return get-deep($size, $keys...);
+}
+
+@function _misc($keys...) {
+  @return get-deep($misc, $keys...);
+}

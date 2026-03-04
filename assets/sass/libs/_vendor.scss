@@ -1,0 +1,65 @@
+@use "sass:list";
+@use "sass:string";
+@use "sass:meta";
+
+$vendor-prefixes: ('-webkit-', '-moz-', '-ms-', '') !default;
+
+$vendor-properties: (
+  'appearance': true, 'backdrop-filter': true, 'clip-path': true, 'filter': true,
+  'flex': true, 'align-items': true, 'justify-content': true, 'order': true,
+  'transform': true, 'transition': true, 'user-select': true, 'sticky': true,
+  'mask-image': true, 'columns': true, 'column-count': true
+) !default;
+
+$vendor-values: (
+  'linear-gradient': true, 'radial-gradient': true, 'sticky': true,
+  'flex': true, 'inline-flex': true, 'fit-content': true
+) !default;
+
+
+@function str-replace($string, $search, $replace: '') {
+  $index: string.index($string, $search);
+  @if $index {
+    @return string.slice($string, 1, $index - 1) + $replace + 
+           str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
+  }
+  @return $string;
+}
+
+@mixin keyframes($name) {
+  @each $prefix in $vendor-prefixes {
+    @if $prefix != '' {
+      @#{$prefix}keyframes #{$name} { @content; }
+    }
+  }
+  @keyframes #{$name} { @content; }
+}
+
+@mixin vendor($prop, $val) {
+  $val-str: meta.inspect($val); // Ensure we are working with a string for replacement
+  $should-prefix-prop: map-has-key($vendor-properties, $prop);
+  
+  $should-prefix-val: false;
+  @each $v-keyword, $true in $vendor-values {
+    @if string.index($val-str, $v-keyword) {
+      $should-prefix-val: true;
+    }
+  }
+
+  @if $should-prefix-prop or $should-prefix-val {
+    @each $vendor in $vendor-prefixes {
+      $current-prop: if($should-prefix-prop, #{$vendor}#{$prop}, $prop);
+      
+      $current-val: $val-str;
+      @if $should-prefix-val {
+        @each $v-keyword, $true in $vendor-values {
+          $current-val: str-replace($current-val, $v-keyword, #{$vendor}#{$v-keyword});
+        }
+      }
+
+      #{$current-prop}: #{$current-val};
+    }
+  } @else {
+    #{$prop}: #{$val};
+  }
+}

@@ -1,0 +1,81 @@
+@use "sass:string";
+@use "sass:math";
+@use "sass:list";
+
+
+  text-decoration: none;
+
+  &:#{$where} {
+    @if $content { content: $content; }
+
+    // Accessibility & Rendering
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    // Font Family Logic
+    @if $category == 'brands' {
+      font-family: 'Font Awesome 6 Brands';
+    } @else {
+      font-family: 'Font Awesome 6 Free';
+      font-weight: if($category == 'solid', 900, 400);
+    }
+    
+    @content; 
+  }
+}
+
+
+@mixin padding($tb, $lr, $extra: (0,0,0,0), $important: false) {
+  $suffix: if($important, "!important", "");
+  
+  // Get margin unit safely
+  $margin: _size(element-margin);
+  $min-bound: if(math.unit($margin) == "rem", 0.1rem, 0.1em);
+
+  // Extract extra values
+  $e-top:    list.nth($extra, 1);
+  $e-right:  list.nth($extra, 2);
+  $e-bottom: list.nth($extra, 3);
+  $e-left:   list.nth($extra, 4);
+
+  padding: 
+    ($tb + $e-top) 
+    ($lr + $e-right) 
+    max($min-bound, ($tb - $margin + $e-bottom)) 
+    ($lr + $e-left) 
+    #{$suffix};
+}
+
+@function svg-url($svg) {
+  $map: (
+    '"': "'",
+    "%": "%25",
+    "<": "%3C",
+    ">": "%3E",
+    "&": "%26",
+    "#": "%23",
+    "{": "%7B",
+    "}": "%7D",
+    ";": "%3B"
+  );
+
+  $encoded: $svg;
+  @each $char, $replacement in $map {
+    $encoded: str-replace($encoded, $char, $replacement);
+  }
+
+  @return url("data:image/svg+xml;charset=utf8,#{$encoded}");
+}
+
+@function str-replace($string, $search, $replace: "") {
+  $index: string.find($string, $search);
+  @if $index {
+    @return string.slice($string, 1, $index - 1) + $replace + str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
+  }
+  @return $string;
+}
