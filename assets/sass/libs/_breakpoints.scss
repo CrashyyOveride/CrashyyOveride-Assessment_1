@@ -1,0 +1,41 @@
+@use "sass:map";
+@use "sass:meta";
+@use "sass:string";
+
+$breakpoints: (
+  "mobile":  (null, 480px),
+  "tablet":  (481px, 1024px),
+  "desktop": (1025px, 1440px),
+  "wide":    (1441px, null),
+) !default;
+
+@mixin respond-to($query) {
+  $op: "eq";
+  $name: $query;
+  @if string.slice($query, 1, 2) == ">=" { $op: "gte"; $name: string.slice($query, 3); }
+  @else if string.slice($query, 1, 2) == "<=" { $op: "lte"; $name: string.slice($query, 3); }
+  @else if string.slice($query, 1, 1) == ">"  { $op: "gt";  $name: string.slice($query, 2); }
+  @else if string.slice($query, 1, 1) == "<"  { $op: "lt";  $name: string.slice($query, 2); }
+  @else if string.slice($query, 1, 1) == "!"  { $op: "not"; $name: string.slice($query, 2); }
+
+  @if not map.has-key($breakpoints, $name) {
+    @error "Invalid breakpoint: '#{$name}'. Available: #{map.keys($breakpoints)}";
+  }
+
+  $range: map.get($breakpoints, $name);
+  $min: nth($range, 1);
+  $max: nth($range, 2);
+  $media: "";
+
+  @if $op == "gte" or ($op == "eq" and $max == null) {
+    $media: "screen and (min-width: #{$min})";
+  } @else if $op == "lte" or ($op == "eq" and $min == null) {
+    $media: "screen and (max-width: #{$max})";
+  } @else if $op == "eq" {
+    $media: "screen and (min-width: #{$min}) and (max-width: #{$max})";
+  }
+
+  @media #{$media} {
+    @content;
+  }
+}

@@ -1,0 +1,60 @@
+@use "sass:math";
+@use "sass:list";
+
+@mixin html-grid($gutters: 1.5em, $suffixes: ('')) {
+  // 1. Config
+  $cols: 12;
+  $multipliers: (0, 0.25, 0.5, 1, 1.5, 2);
+  
+  $gutter-col: if(type-of($gutters) == 'list', list.nth($gutters, 1), $gutters);
+  $gutter-row: if(type-of($gutters) == 'list', list.nth($gutters, 2), 0);
+
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  // Modern Gutter approach using 'gap' instead of negative margins
+  column-gap: $gutter-col;
+  row-gap: $gutter-row;
+
+  > * {
+    box-sizing: border-box;
+    flex-shrink: 0; // Ensure columns don't collapse
+  }
+
+  &.aln-left   { justify-content: flex-start; }
+  &.aln-center { justify-content: center; }
+  &.aln-right  { justify-content: flex-end; }
+  &.aln-top    { align-items: flex-start; }
+  &.aln-middle { align-items: center; }
+  &.aln-bottom { align-items: flex-end; }
+
+  @each $suffix in $suffixes {
+    $s: if($suffix == '', '', '-' + $suffix);
+
+    > .imp#{$s} { order: -1; }
+
+    @for $i from 1 through $cols {
+      $width: math.percentage(math.div($i, $cols));
+      
+      > .col-#{$i}#{$s} { 
+        // We use calc to account for the flex gap
+        width: calc(#{$width} - (#{$gutter-col} * #{math.div($cols - $i, $cols)}));
+      }
+
+      > .off-#{$i}#{$s} { 
+        margin-left: calc(#{$width} + (#{$gutter-col} * #{math.div($i, $cols)}));
+      }
+    }
+
+    @each $m in $multipliers {
+      $class: if($m == 1, '', '.gtr-' + ($m * 100));
+
+      &#{$class} {
+        column-gap: $gutter-col * $m;
+        row-gap: if($gutter-row == 0, $gutter-col * $m, $gutter-row * $m);
+        
+        &.gtr-uniform { row-gap: $gutter-col * $m; }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+@use "sass:map";
+
+$theme: (
+  "misc": (
+    "z-index-base": 10000,
+  ),
+  "duration": (
+    "header": 0.5s,
+  ),
+  "size": (
+    "header": 275px,
+    "element-margin": 2rem, // Required for your padding mixin
+  ),
+  "font": (
+    "family-base": ("Source Sans Pro", sans-serif),
+    "weight-bold": 900,
+  ),
+  "palette": (
+    "bg": #ffffff,
+    "fg": #585858,
+    "accent": #e44c65,
+  ),
+) !default;
+
+@function _misc($key)     { @return map.get($theme, "misc", $key); }
+@function _duration($key) { @return map.get($theme, "duration", $key); }
+@function _size($key)     { @return map.get($theme, "size", $key); }
+@function _font($key)     { @return map.get($theme, "font", $key); }
+@function _palette($key)  { @return map.get($theme, "palette", $key); }
