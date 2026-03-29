@@ -28,4 +28,6 @@ Significant modifications and original components were integrated into the base 
     *   Developed a specialized **Contact Us** system featuring school-domain validation placeholders (`@sydstu.catholic.edu.au`).
     *   Restructured the sidebar navigation for school-specific utility, including Calendar, Resources, and News sections.
 *   **Responsive Optimization:** Refined CSS media queries to ensure the House Standings and Wordle game components remain fully functional across desktop and mobile devices.
-
+*   
+---
+*Developed by Tynan Kocet | March 2026*
